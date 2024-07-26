@@ -1,0 +1,79 @@
+components: {}
+info:
+  title: broken-flask-api-extracted
+  version: "0.1"
+openapi: 3.0.0
+paths:
+  /:
+    get:
+      operationId: root_GET
+      responses:
+        default:
+          description: Default response
+      x-name: root_GET
+      x-source: app.py~~22
+    x-name: root
+  /api/v2/employees/{id}:
+    get:
+      operationId: api_v2_employees_{id}_GET
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+          x-field-kind: normal
+          x-field-original-type: builtin.str
+          x-field-type: string
+        x-category: path parameter
+      responses:
+        default:
+          description: Default response
+      x-name: api_v2_employees_{id}_GET
+      x-source: app.py~~81
+    x-name: api_v2_employees_{id}
+  /api/v2/users/{id}:
+    get:
+      operationId: api_v2_users_{id}_GET
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+          x-field-kind: normal
+          x-field-original-type: builtin.str
+          x-field-type: string
+        x-category: path parameter
+      responses:
+        default:
+          description: Default response
+      x-name: api_v2_users_{id}_GET
+      x-source: app.py~~80
+    x-name: api_v2_users_{id}
+  /healthcheck:
+    get:
+      operationId: healthcheck_GET
+      responses:
+        default:
+          description: Default response
+      x-name: healthcheck_GET
+      x-source: app.py~~82
+    head:
+      operationId: healthcheck_HEAD
+      responses:
+        default:
+          description: Default response
+      x-name: healthcheck_HEAD
+      x-source: app.py~~82
+    options:
+      operationId: healthcheck_OPTIONS
+      responses:
+        default:
+          description: Default response
+      x-name: healthcheck_OPTIONS
+      x-source: app.py~~82
+    x-name: healthcheck
+servers:
+- description: Default server
+  url: https://flask.brokenlol.com
