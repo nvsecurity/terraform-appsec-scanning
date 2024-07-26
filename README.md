@@ -1,14 +1,12 @@
-# NightVision Terraform modules
+# AppSec Scanning Terraform modules
 
 Manage scheduled security scans of your APIs and web apps with Terraform.
 
 These modules allow you to:
 
-1. Execute scans within your VPC as a cron job with AWS Eventbridge
-2. Create a NightVision Web target
-3. Create a NightVision OpenAPI target
-    - With a custom, local OpenAPI definition file
-    - By generating a Swagger doc from code analysis
+1. Execute scans against APIs and Web Apps within your VPC as a cron job with AWS Eventbridge
+2. Automatically generate API scanning targets by generating a Swagger doc from code analysis
+3. Create and manage inventories of NightVision targets (both Web apps and APIs)
 
 # Prerequisites
 
