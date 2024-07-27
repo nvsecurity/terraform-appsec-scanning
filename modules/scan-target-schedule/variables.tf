@@ -45,11 +45,6 @@ variable "project" {
   type        = string
 }
 
-variable "application" {
-  description = "The application name"
-  type        = string
-}
-
 variable "auth" {
   description = "Optional auth key"
   type        = string

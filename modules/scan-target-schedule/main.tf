@@ -16,7 +16,7 @@ resource "aws_scheduler_schedule" "scan" {
       security_group_id = var.security_group_id
       target            = var.target
       project           = var.project
-      application       = var.application
+      application       = var.target
       auth              = var.auth != null ? var.auth : null
     })
   }

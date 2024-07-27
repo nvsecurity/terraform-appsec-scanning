@@ -5,7 +5,6 @@ locals {
   scan_schedules = [
     {
       schedule_name     = "scan-javaspringvulny-web"
-      application       = "javaspringvulny-web"
       project           = local.project
       security_group_id = local.security_group_id
       subnet_id         = local.subnet_id
@@ -14,7 +13,6 @@ locals {
     },
     {
       schedule_name     = "scan-testphp"
-      application       = "testphp"
       project           = local.project
       security_group_id = local.security_group_id
       subnet_id         = local.subnet_id
