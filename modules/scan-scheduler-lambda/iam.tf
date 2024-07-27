@@ -224,8 +224,8 @@ data "aws_iam_policy_document" "scheduled_scan_lambda" {
 }
 
 resource "aws_iam_policy" "scheduled_scan_lambda" {
-  name        = "scheduled-scan-lambda-policy"
-  policy      = data.aws_iam_policy_document.scheduled_scan_lambda.json
+  name   = "scheduled-scan-lambda-policy"
+  policy = data.aws_iam_policy_document.scheduled_scan_lambda.json
 }
 
 resource "aws_iam_role_policy_attachment" "scheduled_scan_lambda" {

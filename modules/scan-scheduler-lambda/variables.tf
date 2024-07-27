@@ -57,6 +57,11 @@ variable "nightvision_token" {
   description = "The Nightvision API token that will be used to run scans."
 }
 
+variable "region" {
+  description = "The AWS region to deploy the Lambda function and scanner instances."
+  type        = string
+}
+
 # ---------------------------------------------------------------------------------------------------------------------
 # Lambda function arguments
 # ---------------------------------------------------------------------------------------------------------------------

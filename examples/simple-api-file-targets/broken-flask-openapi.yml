@@ -1,6 +1,6 @@
 components: {}
 info:
-  title: broken-flask-api-extracted
+  title: broken-flask-local
   version: "0.1"
 openapi: 3.0.0
 paths:
@@ -11,7 +11,7 @@ paths:
         default:
           description: Default response
       x-name: root_GET
-      x-source: app.py~~22
+      x-source: app.py~~21
     x-name: root
   /api/v2/employees/{id}:
     get:
@@ -30,7 +30,7 @@ paths:
         default:
           description: Default response
       x-name: api_v2_employees_{id}_GET
-      x-source: app.py~~81
+      x-source: app.py~~71
     x-name: api_v2_employees_{id}
   /api/v2/users/{id}:
     get:
@@ -49,7 +49,7 @@ paths:
         default:
           description: Default response
       x-name: api_v2_users_{id}_GET
-      x-source: app.py~~80
+      x-source: app.py~~70
     x-name: api_v2_users_{id}
   /healthcheck:
     get:
@@ -58,22 +58,22 @@ paths:
         default:
           description: Default response
       x-name: healthcheck_GET
-      x-source: app.py~~82
+      x-source: app.py~~72
     head:
       operationId: healthcheck_HEAD
       responses:
         default:
           description: Default response
       x-name: healthcheck_HEAD
-      x-source: app.py~~82
+      x-source: app.py~~72
     options:
       operationId: healthcheck_OPTIONS
       responses:
         default:
           description: Default response
       x-name: healthcheck_OPTIONS
-      x-source: app.py~~82
+      x-source: app.py~~72
     x-name: healthcheck
 servers:
 - description: Default server
-  url: https://flask.brokenlol.com
+  url: http://localhost:4000

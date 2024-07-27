@@ -50,3 +50,5 @@ __pycache__/
 /modules/scan-scheduler-lambda/.terraform.lock.hcl
 /modules/scan-scheduler-lambda/response.json
 /modules/scan-scheduler-lambda/lambda.zip
+/.terraform.lock.hcl
+/examples/simple-api-code-targets/openapi-spec.yml

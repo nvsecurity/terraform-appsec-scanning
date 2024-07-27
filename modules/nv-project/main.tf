@@ -1,6 +1,6 @@
 resource "null_resource" "nightvision_project" {
   triggers = {
-    project_name       = var.project_name
+    project_name      = var.project_name
     nightvision_token = var.nightvision_token
   }
 

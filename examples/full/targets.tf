@@ -1,42 +1,37 @@
 locals {
   web_targets = [
     {
-      target_name = "testphp"
+      target_name = "testphp-full-web"
       project     = local.project
       url         = "http://testphp.vulnweb.com/"
     },
-    {
-      target_name = "javaspringvulny-web"
-      project     = local.project
-      url         = "https://javaspringvulny.nvtest.io:9000/"
-    },
-    // Add more targets as needed
   ]
-
-  public_api_targets = [
+  # API Scan - Swagger generated from analyzing code
+  openapi_code_targets = [
     {
-      target_name        = "javaspringvulny-api"
+      target_name = "broken-flask-full-code"
+      project     = local.project
+      url         = "https://flask.brokenlol.com"
+      language    = "python"
+      code_path   = "${abspath(path.module)}/../flask_app"
+    },
+  ]
+  # API Scan - local Swagger file
+  openapi_file_targets = [
+    {
+      url               = "https://flask.brokenlol.com"
+      project           = local.project
+      target_name       = "broken-flask-full-file"
+      openapi_file_path = "${abspath(path.module)}/broken-flask-openapi.yml"
+    },
+  ]
+  # API Scan - Swagger from a public URL
+  openapi_url_targets = [
+    {
+      target_name        = "jsv-api-full-url"
       project            = local.project
       url                = "https://javaspringvulny.nvtest.io:9000/"
       openapi_public_url = "https://raw.githubusercontent.com/vulnerable-apps/javaspringvulny/main/openapi.yaml"
     }
   ]
-  openapi_file_targets = []
-  openapi_code_targets = []
-  #     openapi_file_targets = [
-  #         {
-  #         target_name = "openapi-file"
-  #         target_url  = "https://javaspringvulny.nvtest.io:9000/"
-  #         openapi_file_path = "openapi.json"
-  #         }
-  #     ]
-  #
-  #     openapi_code_targets = [
-  #         {
-  #         target_name = "openapi-code"
-  #         target_url  = "https://javaspringvulny.nvtest.io:9000/"
-  #         language = "java"
-  #         code_path = "src/main/java"
-  #         }
-  #     ]
 }

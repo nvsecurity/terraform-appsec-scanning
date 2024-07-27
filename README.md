@@ -1,6 +1,6 @@
 # AppSec Scanning Terraform modules
 
-Manage scheduled security scans of your APIs and web apps with Terraform.
+Inject web app and API scans inside your AWS VPC with NightVision.
 
 These modules allow you to:
 
@@ -11,8 +11,7 @@ These modules allow you to:
 # Prerequisites
 
 * Sign up for NightVision: https://app.nightvision.net/
-* [Install the NightVision CLI](#installing-the-nightvision-cli)
-* [Generate a NightVision token](#generate-a-nightvision-token) and store it in a `nightvision.auto.tfvars` file.
+* [Install the NightVision CLI](#installing-the-nightvision-cli) and log in with: `nightvision login`
 
 # Tutorial
 
@@ -109,25 +108,217 @@ module "private_dast_scans" {
 }
 ```
 
-# Additional usage
+<!-- BEGIN_TF_DOCS -->
 
-## Create a Web target
+## Outputs
 
-```hcl
-# TODO: Add example
-```
+No outputs.
 
-## Create an API target by uploading a Swagger file
+## Inputs
 
-```hcl
-# TODO: Add example
-```
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input_create_project_name"></a> [create\_project\_name](#input\_create\_project\_name) | Optionally, create a NightVision target. | `string` | `null` | no |
+| <a name="input_create_scanner_infra"></a> [create\_scanner\_infra](#input\_create\_scanner\_infra) | Optionally, create the Lambda infrastructure. | `bool` | `true` | no |
+| <a name="input_existing_scanner_lambda_name"></a> [existing\_scanner\_lambda\_name](#input\_existing\_scanner\_lambda\_name) | The name of the Lambda function that will be used to scan the target. | `string` | `"nightvision-scheduled-scan"` | no |
+| <a name="input_existing_scheduler_role_name"></a> [existing\_scheduler\_role\_name](#input\_existing\_scheduler\_role\_name) | The name of the IAM role that will be used to schedule the scans. | `string` | `"NightVisionSchedulerExecutionRole"` | no |
+| <a name="input_nightvision_token"></a> [nightvision\_token](#input\_nightvision\_token) | NightVision API token | `any` | n/a | yes |
+| <a name="input_openapi_code_targets"></a> [openapi\_code\_targets](#input\_openapi\_code\_targets) | OpenAPI targets where the OpenAPI file is generated from analyzing local code paths. | <pre>list(object({<br>    url         = string<br>    project     = string<br>    language    = string<br>    target_name = string<br>    code_path   = string<br>  }))</pre> | `[]` | no |
+| <a name="input_openapi_file_targets"></a> [openapi\_file\_targets](#input\_openapi\_file\_targets) | OpenAPI targets where the OpenAPI file is locally accessible. | <pre>list(object({<br>    url               = string<br>    project           = string<br>    target_name       = string<br>    openapi_file_path = string<br>  }))</pre> | `[]` | no |
+| <a name="input_openapi_url_targets"></a> [openapi\_url\_targets](#input\_openapi\_url\_targets) | OpenAPI targets where the OpenAPI file is publicly accessible. | <pre>list(object({<br>    url                = string<br>    project            = string<br>    target_name        = string<br>    openapi_public_url = string<br>  }))</pre> | `[]` | no |
+| <a name="input_region"></a> [region](#input\_region) | The AWS region to deploy the Lambda function and scanner instances. | `string` | `"us-east-1"` | no |
+| <a name="input_scan_configs"></a> [scan\_configs](#input\_scan\_configs) | List of scan configs | <pre>list(object({<br>    # AWS Arguments<br>    schedule_name       = string<br>    schedule_expression = optional(string, "rate(7 days)")<br>    # AWS Resources<br>    security_group_id = string<br>    subnet_id         = string<br>    # NightVision Constructs<br>    project = string<br>    target  = string<br>    auth    = optional(string)<br>  }))</pre> | `[]` | no |
+| <a name="input_web_targets"></a> [web\_targets](#input\_web\_targets) | Web Application Targets to scan. | <pre>list(object({<br>    url         = string<br>    project     = string<br>    target_name = string<br>  }))</pre> | `[]` | no |
 
-## Create an API target by scanning the code with NightVision
+# Examples
 
-```hcl
-# TODO: Add example
-```
+### Create a project
+
+  This will just create a NightVision project.
+
+  ```hcl
+  module "nightvision_project" {
+  source               = "github.com/nvsecurity/terraform-appsec-scanning"
+  create_project_name  = "terraform-example"
+  nightvision_token    = var.nightvision_token
+  create_scanner_infra = false
+}
+  ```
+
+### Create scan automation infrastructure
+
+  This will create a Lambda function that will be able to launch ephemeral EC2 instances with scoped privileges and scan targets. 
+
+  ```hcl
+  module "scan_infrastructure" {
+  source               = "github.com/nvsecurity/terraform-appsec-scanning"
+  nightvision_token    = var.nightvision_token
+  create_scanner_infra = true
+  region               = "us-east-1"
+}
+  ```
+
+### Create scheduled scans only
+
+  If you don't want to create targets or infrastructure and you just want to schedule scans, this is a good example. 
+
+  ```hcl
+  locals {
+  project                     = "terraform-example"
+  security_group_id           = "sg-0839aeaccdda71f96"
+  subnet_id                   = "subnet-07a080852c0769a32"
+}
+
+module "weekly_scans" {
+  source                      = "github.com/nvsecurity/terraform-appsec-scanning"
+  nightvision_token           = var.nightvision_token
+  scan_configs                = local.scan_configs
+  create_scanner_infra        = false
+}
+
+locals {
+  scan_configs = [
+    {
+      schedule_name     = "scan-testphp"
+      target            = "testphp"
+      project           = local.project
+      security_group_id = local.security_group_id
+      subnet_id         = local.subnet_id
+    },
+  ]
+}
+  ```
+
+### Scan APIs by analyzing code
+
+  NightVision can scan APIs that don't have existing OpenAPI specifications, by scanning code. If your code is locally accessible, you can generate the OpenAPI specs with NightVision:
+
+  ```hcl
+  locals {
+  project                     = "terraform-example"
+  security_group_id           = "sg-0839aeaccdda71f96"
+  subnet_id                   = "subnet-07a080852c0769a32"
+}
+
+module "weekly_scans" {
+  source                      = "github.com/nvsecurity/terraform-appsec-scanning"
+  nightvision_token           = var.nightvision_token
+  scan_configs                = local.scan_configs
+  openapi_code_targets        = local.openapi_code_targets
+  create_scanner_infra        = false
+}
+
+locals {
+  openapi_code_targets = [
+    {
+      target_name = "broken-flask-extracted"
+      project     = local.project
+      url         = "https://flask.brokenlol.com"
+      language    = "python"
+      code_path   = "${abspath(path.module)}/flask_app"
+    },
+  ]
+  # Define weekly scans
+  scan_configs = [
+    {
+      schedule_name     = "scan-broken-flask"
+      target            = "broken-flask-extracted"
+      project           = local.project
+      security_group_id = local.security_group_id
+      subnet_id         = local.subnet_id
+    },
+  ]
+}
+  ```
+
+### Scan APIs with an OpenAPI URL
+
+  NightVision can scan APIs that have publicly accessible OpenAPI specifications. You can provide the URL to the OpenAPI spec to NightVision:
+  
+  ```hcl
+  locals {
+  project           = "terraform-example"
+  security_group_id = "sg-0839aeaccdda71f96"
+  subnet_id         = "subnet-07a080852c0769a32"
+}
+
+module "api_scans" {
+  source                 = "github.com/nvsecurity/terraform-appsec-scanning"
+  nightvision_token      = var.nightvision_token
+  scan_configs           = local.scan_configs
+  openapi_url_targets = local.openapi_url_targets
+  create_scanner_infra   = false
+}
+
+locals {
+  openapi_url_targets = [
+    {
+      target_name        = "jsv-api-from-url"
+      project            = local.project
+      url                = "https://javaspringvulny.nvtest.io:9000/"
+      openapi_public_url = "https://raw.githubusercontent.com/vulnerable-apps/javaspringvulny/main/openapi.yaml"
+    }
+  ]
+  # Define weekly scans
+  scan_configs = [
+    {
+      schedule_name     = "scan-jsv-api-from-url"
+      target            = "jsv-api-from-url"
+      project           = local.project
+      security_group_id = local.security_group_id
+      subnet_id         = local.subnet_id
+    },
+  ]
+}
+  ```
+
+### Scan APIs with a local OpenAPI file
+
+NightVision can scan APIs that have OpenAPI specifications stored locally. You can provide the path to the OpenAPI spec to NightVision:
+
+  ```hcl
+  locals {
+  project           = "terraform-example"
+  security_group_id = "sg-0839aeaccdda71f96"
+  subnet_id         = "subnet-07a080852c0769a32"
+}
+
+module "weekly_scans" {
+  source               = "github.com/nvsecurity/terraform-appsec-scanning"
+  nightvision_token    = var.nightvision_token
+  scan_configs         = local.scan_configs
+  openapi_file_targets = local.openapi_file_targets
+  create_scanner_infra = false
+}
+
+locals {
+  openapi_file_targets = [
+    {
+      url               = "https://flask.brokenlol.com"
+      project           = local.project
+      target_name       = "broken-flask-from-file"
+      openapi_file_path = "${abspath(path.module)}/broken-flask-openapi.yml"
+    },
+  ]
+  # Define weekly scans
+  scan_configs = [
+    {
+      schedule_name     = "scan-broken-flask-from-file"
+      target            = "broken-flask-from-file"
+      project           = local.project
+      security_group_id = local.security_group_id
+      subnet_id         = local.subnet_id
+    },
+  ]
+}
+  ```
+
+## Resources
+
+
+- data source.aws_caller_identity.current (main.tf#1)
+- data source.aws_region.current (main.tf#2)
+<!-- END_TF_DOCS -->
 
 # Appendix: Additional Instructions
 
@@ -193,3 +384,7 @@ For example, you can follow these instructions to set up the secrets in GitHub A
 We can always use help improving these modules. If you have a suggestion, please open an issue or a pull request.
 
 Note: This module makes heavy usage of Terraform's `null_resource` to create and manage NightVision targets. This is because NightVision does not have a Terraform provider yet.
+
+# TODO
+
+- [ ] Terraform destroy won't work for the Lambda function if the zip file doesn't exist. So we should figure out how to handle that

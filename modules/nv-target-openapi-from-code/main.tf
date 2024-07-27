@@ -23,10 +23,11 @@ resource "null_resource" "swagger_extraction" {
     extract_openapi_from_path = var.analyze_code_path
     project_name              = var.project_name
     language                  = var.language
+    target_id                 = module.target_general.target_id
   }
 
   provisioner "local-exec" {
-    when    = create
+    when = create
     # nightvision swagger extract ./ -o openapi-spec.yml -t javaspringvulny-api -l java
     command = "nightvision swagger extract ${self.triggers.extract_openapi_from_path} --output ${path.root}/openapi-spec.yml --target ${self.triggers.target_name} --lang ${self.triggers.language} --project ${var.project_name}"
     # If it runs on update, the target will already be created so it will throw exit code 1.

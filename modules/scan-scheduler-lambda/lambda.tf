@@ -7,8 +7,8 @@ locals {
 
 resource "null_resource" "build_lambda" {
   provisioner "local-exec" {
-    when    = create
-    command = <<EOT
+    when        = create
+    command     = <<EOT
       mkdir -p build
       pip install -r ${self.triggers.lambda_function_dir}/requirements.txt -t ${self.triggers.build_dir}/
       cp -r ${self.triggers.lambda_function_dir}/* ${self.triggers.build_dir}/
@@ -17,15 +17,15 @@ resource "null_resource" "build_lambda" {
   }
 
   provisioner "local-exec" {
-    when = destroy
+    when    = destroy
     command = "rm -rf ${self.triggers.build_dir} ${self.triggers.zip_file}"
   }
 
   triggers = {
     lambda_directory_hash = sha256(join("", [for f in fileset(local.lambda_function_dir, "**/*") : filemd5("${local.lambda_function_dir}/${f}")]))
-    build_dir            = local.build_dir
-    zip_file             = local.zip_file
-    lambda_function_dir  = local.lambda_function_dir
+    build_dir             = local.build_dir
+    zip_file              = local.zip_file
+    lambda_function_dir   = local.lambda_function_dir
   }
 }
 
@@ -38,17 +38,17 @@ data "archive_file" "create_dist_pkg" {
 
 
 resource "aws_lambda_function" "scanner_lambda" {
-  filename         = "${path.module}/${local.zip_file}"
-  function_name    = var.function_name
-  role             = aws_iam_role.scheduled_scan.arn
-  handler          = local.handler
-  runtime          = var.runtime
-  timeout          = 30
+  filename      = "${path.module}/${local.zip_file}"
+  function_name = var.function_name
+  role          = aws_iam_role.scheduled_scan.arn
+  handler       = local.handler
+  runtime       = var.runtime
+  timeout       = 30
   tracing_config {
     mode = "Active"
   }
   source_code_hash = data.archive_file.create_dist_pkg.output_base64sha256
-  depends_on = [null_resource.build_lambda]
+  depends_on       = [null_resource.build_lambda]
   environment {
     variables = {
       AWS_AMI_ID           = data.aws_ami.amazon_linux_2.id

@@ -7,8 +7,8 @@ resource "aws_launch_template" "nv_scanner" {
   block_device_mappings {
     device_name = "/dev/xvda"
     ebs {
-      volume_size = 16
-      volume_type = "gp2"
+      volume_size           = 16
+      volume_type           = "gp2"
       delete_on_termination = true
     }
   }
@@ -66,7 +66,7 @@ resource "aws_iam_instance_profile" "nv_scanner" {
 data "aws_iam_policy_document" "nv_scanner" {
   statement {
     effect = "Allow"
-    sid = "NukeThyself"
+    sid    = "NukeThyself"
     actions = [
       "ec2:DeleteVolume",
       "ec2:TerminateInstances",
@@ -77,12 +77,12 @@ data "aws_iam_policy_document" "nv_scanner" {
     resources = ["*"]
     condition {
       test     = "StringEquals"
-      values = [var.ec2_resource_tag_name]
+      values   = [var.ec2_resource_tag_name]
       variable = "ec2:ResourceTag/Name"
     }
   }
   statement {
-    sid = "GetNightVisionToken"
+    sid    = "GetNightVisionToken"
     effect = "Allow"
     actions = [
       "secretsmanager:GetSecretValue",
@@ -92,7 +92,7 @@ data "aws_iam_policy_document" "nv_scanner" {
     ]
   }
   statement {
-    sid = "WriteCloudWatchLogs"
+    sid    = "WriteCloudWatchLogs"
     effect = "Allow"
     actions = [
       "logs:CreateLogGroup",

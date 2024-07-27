@@ -1,0 +1,108 @@
+formatter: "" # this is required
+
+version: ""
+
+header-from: main.tf
+footer-from: ""
+
+recursive:
+  enabled: false
+  path: modules
+  include-main: true
+
+sections:
+  hide: []
+  show: []
+
+content: |-
+
+  {{ .Outputs }}
+
+  {{ .Inputs }}
+
+  # Examples
+  
+  ### Create a project
+  
+    This will just create a NightVision project.
+  
+    ```hcl
+    {{ include "examples/project/main.tf" }}
+    ```
+
+  ### Create scan automation infrastructure
+  
+    This will create a Lambda function that will be able to launch ephemeral EC2 instances with scoped privileges and scan targets. 
+
+    ```hcl
+    {{ include "examples/infra-only/main.tf" }}
+    ```
+  
+  ### Create scheduled scans only
+  
+    If you don't want to create targets or infrastructure and you just want to schedule scans, this is a good example. 
+  
+    ```hcl
+    {{ include "examples/schedule-only/main.tf" }}
+    ```
+  
+  ### Scan APIs by analyzing code
+  
+    NightVision can scan APIs that don't have existing OpenAPI specifications, by scanning code. If your code is locally accessible, you can generate the OpenAPI specs with NightVision:
+  
+    ```hcl
+    {{ include "examples/simple-api-code-targets/main.tf" }}
+    ```
+
+  ### Scan APIs with an OpenAPI URL
+  
+    NightVision can scan APIs that have publicly accessible OpenAPI specifications. You can provide the URL to the OpenAPI spec to NightVision:
+    
+    ```hcl
+    {{ include "examples/simple-api-url-targets/main.tf" }}
+    ```
+  
+  ### Scan APIs with a local OpenAPI file
+  
+  NightVision can scan APIs that have OpenAPI specifications stored locally. You can provide the path to the OpenAPI spec to NightVision:
+  
+    ```hcl
+    {{ include "examples/simple-api-file-targets/main.tf" }}
+    ```
+
+  ## Resources
+
+  {{ range .Module.Resources }}
+  - {{ .GetMode }}.{{ .Spec }} ({{ .Position.Filename }}#{{ .Position.Line }})
+  {{- end }}
+
+output:
+  file: ""
+  mode: inject
+  template: |-
+    <!-- BEGIN_TF_DOCS -->
+    {{ .Content }}
+    <!-- END_TF_DOCS -->
+
+output-values:
+  enabled: false
+  from: ""
+
+sort:
+  enabled: true
+  by: name
+
+settings:
+  anchor: true
+  color: true
+  default: true
+  description: false
+  escape: true
+  hide-empty: false
+  html: true
+  indent: 2
+  lockfile: true
+  read-comments: true
+  required: true
+  sensitive: true
+  type: true

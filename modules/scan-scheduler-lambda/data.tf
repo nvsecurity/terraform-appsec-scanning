@@ -2,11 +2,11 @@ data "aws_ami" "amazon_linux_2" {
   most_recent = true
   owners      = ["amazon"]
   filter {
-      name   = "name"
-      values = [
-        "amzn2-ami-kernel-5.10-hvm-2.0.20240719.0-x86_64-gp2",
-        # "amzn2-ami-kernel-5.10-hvm-2.0.*-x86_64-gp2",
-      ]
+    name = "name"
+    values = [
+      "amzn2-ami-kernel-5.10-hvm-2.0.20240719.0-x86_64-gp2",
+      # "amzn2-ami-kernel-5.10-hvm-2.0.*-x86_64-gp2",
+    ]
   }
 }
 
