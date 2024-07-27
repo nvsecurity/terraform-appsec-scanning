@@ -7,7 +7,7 @@ variable "schedule_name" {
 }
 
 variable "schedule_expression" {
-  default     = "rate(24 hours)"
+  default     = "rate(7 days)"
   description = "Defines when the schedule runs. Read more in Schedule types on EventBridge Scheduler: https://docs.aws.amazon.com/scheduler/latest/UserGuide/schedule-types.html"
   type        = string
 }

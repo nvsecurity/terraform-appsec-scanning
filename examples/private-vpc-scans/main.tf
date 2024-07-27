@@ -10,7 +10,7 @@ module "scan_schedules" {
   scanner_lambda_arn  = module.scheduler.scanner_lambda_arn
   scheduler_role_arn  = module.scheduler.scheduler_role_arn
   schedule_name       = each.value.schedule_name
-  schedule_expression = each.value.schedule_expression
+  schedule_expression = try(each.value["schedule_expression"], null)
   project             = each.value.project
   security_group_id   = each.value.security_group_id
   subnet_id           = each.value.subnet_id

@@ -8,10 +8,6 @@ These modules allow you to:
 2. Automatically generate API scanning targets by generating a Swagger doc from code analysis
 3. Create and manage inventories of NightVision targets (both Web apps and APIs)
 
-# TODO
-
-* Add an example for pointing to an OpenAPI spec that is publicly exposed, to make it easy to scan APIs that are not in your VPC
-
 # Prerequisites
 
 * Sign up for NightVision: https://app.nightvision.net/
@@ -22,60 +18,63 @@ These modules allow you to:
 
 ## Create a scheduled scan to run inside your VPC
 
-* First, create a NightVision project in `project.tf`:
+* Create a file called `variables.tf`:
 
 ```hcl
-locals {
-  project = "kinnaird"
+variable "nightvision_token" {
+  description = "The NightVision token to use for authentication"
+  sensitive   = true
 }
-module "nightvision_project" {
-  source = "github.com/nvsecurity/terraform-appsec-scanning//modules/nv-project"
-  project_name = local.project
-}
-```
 
-* Next, create your targets with `targets.tf`:
-
-```hcl
 locals {
-  targets = [
-    {
-      target_name = "testphp"
-      target_type = "web"
-      target_url  = "http://testphp.vulnweb.com/"
-    },
-    {
-      target_name = "javaspringvulny-web"
-      target_type = "web"
-      target_url  = "https://javaspringvulny.nvtest.io:9000/"
-    },
-    {
-      target_name = "javaspringvulny-api"
-      target_type = "api"
-      target_url  = "https://javaspringvulny.nvtest.io:9000/"
-    }
-    // Add more targets as needed
-  ]
-}
-```
-
-* Create a file called `network.tf` to define the security group and subnet that will be used to scan the targets:
-
-```hcl
-locals {
-  # Security group that has access to the targets and open egress
+  project           = "terraform-example"
   security_group_id = "sg-0839aeaccdda71f96"
-  # Subnet that has access to the targets
   subnet_id         = "subnet-07a080852c0769a32"
 }
 ```
 
-* Finally, create your scheduled scans in `schedules.tf`:
+* Now generate a NightVision token and store it in `nightvision.auto.tfvars` (ignored by git) so you can work with the NightVision API:
+
+```bash
+export NIGHTVISION_TOKEN=$(nightvision token create)
+echo 'nightvision_token = "'$NIGHTVISION_TOKEN'"' > nightvision.auto.tfvars
+```
+
+* Specify your targets in `targets.tf`:
 
 ```hcl
 locals {
-  project           = local.project
-  scan_schedules = [
+  web_targets = [
+    {
+      target_name = "testphp"
+      project     = local.project
+      url         = "http://testphp.vulnweb.com/"
+    },
+    {
+      target_name = "javaspringvulny-web"
+      project     = local.project
+      url         = "https://javaspringvulny.nvtest.io:9000/"
+    },
+    // Add more targets as needed
+  ]
+
+  public_api_targets = [
+    {
+      target_name        = "javaspringvulny-api"
+      project            = local.project
+      url                = "https://javaspringvulny.nvtest.io:9000/"
+      openapi_public_url = "https://raw.githubusercontent.com/vulnerable-apps/javaspringvulny/main/openapi.yaml"
+    }
+  ]
+}
+```
+
+* Define your weekly scans in `weekly_scans.tf`:
+
+```hcl
+locals {
+  # Define weekly scans
+  scan_configs = [
     {
       schedule_name     = "scan-testphp"
       target            = "testphp"
@@ -94,12 +93,19 @@ locals {
     // Add more schedules as needed
   ]
 }
+```
 
-# This will schedule scans every 24 hours
+* And finally, call the module to create the scheduled scans in `main.tf`:
+
+```hcl
+# This will schedule scans for every 7 days
 module "private_dast_scans" {
   source            = "github.com/nvsecurity/terraform-appsec-scanning"
-  nightvision_token = var.nightvision_token
-  scan_schedules    = local.scan_schedules
+  nightvision_token   = var.nightvision_token
+  scan_configs        = local.scan_configs
+  create_project_name = local.project
+  web_targets         = local.web_targets
+  public_api_targets  = local.public_api_targets
 }
 ```
 
