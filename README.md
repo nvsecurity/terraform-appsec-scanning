@@ -8,6 +8,10 @@ These modules allow you to:
 2. Automatically generate API scanning targets by generating a Swagger doc from code analysis
 3. Create and manage inventories of NightVision targets (both Web apps and APIs)
 
+# TODO
+
+* Modify the Terraform module so it creates an application as well, and sets the default application.
+
 # Prerequisites
 
 * Sign up for NightVision: https://app.nightvision.net/

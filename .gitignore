@@ -45,3 +45,8 @@ __pycache__/
 *.tfstate.*
 *.tfvars
 !terraform.tfvars
+/modules/scan-scheduler-lambda/function.zip
+/modules/scan-scheduler-lambda/lambda_function.zip
+/modules/scan-scheduler-lambda/.terraform.lock.hcl
+/modules/scan-scheduler-lambda/response.json
+/modules/scan-scheduler-lambda/lambda.zip

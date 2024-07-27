@@ -1,0 +1,19 @@
+#!/bin/bash
+set -ex
+
+export NIGHTVISION_TOKEN=$(aws secretsmanager get-secret-value --secret-id {{ secret_name }} --query SecretString --output text --region {{ region }})
+
+curl -L https://downloads.nightvision.net/binaries/latest/nightvision_latest_linux_amd64.tar.gz -q | tar -xz; sudo mv nightvision /usr/local/bin/
+
+nightvision --help
+# List projects so we know it works
+nightvision project list
+
+{{ scan_command }}
+
+# Get instance ID from userdata
+TOKEN=`curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600"`
+INSTANCE_ID=`curl -H "X-aws-ec2-metadata-token: $TOKEN" -v http://169.254.169.254/latest/meta-data/instance-id`
+echo $INSTANCE_ID
+
+aws ec2 terminate-instances --instance-ids $INSTANCE_ID --region {{ region }}
