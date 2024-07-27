@@ -54,7 +54,7 @@ resource "aws_lambda_function" "python_lambda" {
       AWS_AMI_ID           = data.aws_ami.amazon_linux_2.id
       INSTANCE_TAG_NAME    = var.ec2_resource_tag_name
       INSTANCE_TYPE        = var.instance_type
-      SECRET_NAME          = var.nightvision_token_secret_name
+      SECRET_NAME          = aws_secretsmanager_secret.nv_token.name
       LAUNCH_TEMPLATE_NAME = aws_launch_template.nv_scanner.name
     }
   }

@@ -37,18 +37,23 @@ variable "nightvision_token_secret_name" {
   default     = "scheduled-scan-nightvision-token"
 }
 
+variable "scheduler_role_name" {
+  description = "The name of the IAM role that EventBridge Scheduler uses to invoke the Lambda function."
+  type        = string
+  default     = "NightVisionSchedulerExecutionRole"
+}
+# ---------------------------------------------------------------------------------------------------------------------
+# Values
+# ---------------------------------------------------------------------------------------------------------------------
 variable "instance_type" {
   description = "The instance type to use for the scanner."
   type        = string
   default     = "t3.small"
 }
 
-# ---------------------------------------------------------------------------------------------------------------------
-# Values
-# ---------------------------------------------------------------------------------------------------------------------
 variable "nightvision_token" {
-  type      = string
-  sensitive = true
+  type        = string
+  sensitive   = true
   description = "The Nightvision API token that will be used to run scans."
 }
 
@@ -57,18 +62,18 @@ variable "nightvision_token" {
 # ---------------------------------------------------------------------------------------------------------------------
 variable "runtime" {
   description = "The Python runtime"
-  type = string
-  default = "python3.11"
+  type        = string
+  default     = "python3.11"
 }
 
 variable "output_path" {
   description = "Path to function's deployment package into local filesystem. eg: /path/lambda_function.zip"
-  default = "lambda_function.zip"
+  default     = "lambda_function.zip"
 }
 
 variable "distribution_pkg_folder" {
   description = "Folder name to create distribution files..."
-  default = "dist"
+  default     = "dist"
 }
 
 variable "path_source_code" {
