@@ -59,35 +59,43 @@ locals {
 }
 ```
 
+* Create a file called `network.tf` to define the security group and subnet that will be used to scan the targets:
+
+```hcl
+locals {
+  # Security group that has access to the targets and open egress
+  security_group_id = "sg-0839aeaccdda71f96"
+  # Subnet that has access to the targets
+  subnet_id         = "subnet-07a080852c0769a32"
+}
+```
+
 * Finally, create your scheduled scans in `schedules.tf`:
 
 ```hcl
 locals {
-  # replace with the ID of a security group that has access to the targets and open egress
-  security_group_id = "sg-0839aeaccdda71f96"
-  # replace with the ID of a subnet that has access to the targets
-  subnet_id         = "subnet-07a080852c0769a32"
   project           = local.project
   scan_schedules = [
     {
       schedule_name     = "scan-testphp"
+      target            = "testphp"
       project           = local.project
       security_group_id = local.security_group_id
       subnet_id         = local.subnet_id
-      target            = "testphp"
     },
     {
       schedule_name     = "scan-javaspringvulny-web"
+      target            = "javaspringvulny-web"
+      auth              = "javaspringvulny-web"
       project           = local.project
       security_group_id = local.security_group_id
       subnet_id         = local.subnet_id
-      target            = "javaspringvulny-web"
-      auth              = "javaspringvulny-web"
     },
     // Add more schedules as needed
   ]
 }
 
+# This will schedule scans every 24 hours
 module "private_dast_scans" {
   source            = "github.com/nvsecurity/terraform-appsec-scanning"
   nightvision_token = var.nightvision_token
@@ -114,7 +122,6 @@ module "private_dast_scans" {
 ```hcl
 # TODO: Add example
 ```
-
 
 # Appendix: Additional Instructions
 
