@@ -19,3 +19,14 @@ variable "scan_configs" {
   }))
   default = []
 }
+
+
+variable "targets" {
+  description = "List of targets to scan"
+  type = list(object({
+      url         = string
+      target_name = string
+      target_type = string
+  }))
+  default = []
+}

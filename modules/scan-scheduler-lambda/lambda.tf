@@ -37,7 +37,7 @@ data "archive_file" "create_dist_pkg" {
 }
 
 
-resource "aws_lambda_function" "python_lambda" {
+resource "aws_lambda_function" "scanner_lambda" {
   filename         = "${path.module}/${local.zip_file}"
   function_name    = var.function_name
   role             = aws_iam_role.scheduled_scan.arn

@@ -31,7 +31,7 @@ data "aws_iam_policy_document" "scheduler" {
     ]
 
     resources = [
-      aws_lambda_function.python_lambda.arn
+      aws_lambda_function.scanner_lambda.arn
     ]
   }
 }

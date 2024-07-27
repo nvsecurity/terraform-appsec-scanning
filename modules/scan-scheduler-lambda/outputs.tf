@@ -1,5 +1,5 @@
 output "scanner_lambda_arn" {
-  value       = aws_lambda_function.python_lambda.arn
+  value       = aws_lambda_function.scanner_lambda.arn
   description = "The ARN of the Lambda function that will be invoked by the schedule."
 }
 

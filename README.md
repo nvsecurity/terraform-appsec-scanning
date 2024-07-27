@@ -10,14 +10,92 @@ These modules allow you to:
 
 # TODO
 
-* Modify the Terraform module so it creates an application as well, and sets the default application.
+* Add an example for pointing to an OpenAPI spec that is publicly exposed, to make it easy to scan APIs that are not in your VPC
 
 # Prerequisites
 
 * Sign up for NightVision: https://app.nightvision.net/
 * [Install the NightVision CLI](#installing-the-nightvision-cli)
+* [Generate a NightVision token](#generate-a-nightvision-token) and store it in a `nightvision.auto.tfvars` file.
 
-# Usage
+# Tutorial
+
+## Create a scheduled scan to run inside your VPC
+
+* First, create a NightVision project in `project.tf`:
+
+```hcl
+locals {
+  project = "kinnaird"
+}
+module "nightvision_project" {
+  source = "github.com/nvsecurity/terraform-appsec-scanning//modules/nv-project"
+  project_name = local.project
+}
+```
+
+* Next, create your targets with `targets.tf`:
+
+```hcl
+locals {
+  targets = [
+    {
+      target_name = "testphp"
+      target_type = "web"
+      target_url  = "http://testphp.vulnweb.com/"
+    },
+    {
+      target_name = "javaspringvulny-web"
+      target_type = "web"
+      target_url  = "https://javaspringvulny.nvtest.io:9000/"
+    },
+    {
+      target_name = "javaspringvulny-api"
+      target_type = "api"
+      target_url  = "https://javaspringvulny.nvtest.io:9000/"
+    }
+    // Add more targets as needed
+  ]
+}
+```
+
+* Finally, create your scheduled scans in `schedules.tf`:
+
+```hcl
+locals {
+  # replace with the ID of a security group that has access to the targets and open egress
+  security_group_id = "sg-0839aeaccdda71f96"
+  # replace with the ID of a subnet that has access to the targets
+  subnet_id         = "subnet-07a080852c0769a32"
+  project           = local.project
+  scan_schedules = [
+    {
+      schedule_name     = "scan-testphp"
+      project           = local.project
+      security_group_id = local.security_group_id
+      subnet_id         = local.subnet_id
+      target            = "testphp"
+    },
+    {
+      schedule_name     = "scan-javaspringvulny-web"
+      project           = local.project
+      security_group_id = local.security_group_id
+      subnet_id         = local.subnet_id
+      target            = "javaspringvulny-web"
+      auth              = "javaspringvulny-web"
+    },
+    // Add more schedules as needed
+  ]
+}
+
+module "private_dast_scans" {
+  source            = "github.com/nvsecurity/terraform-appsec-scanning"
+  nightvision_token = var.nightvision_token
+  scan_schedules    = local.scan_schedules
+}
+```
+
+# Additional usage
 
 ## Create a Web target
 
@@ -37,15 +115,6 @@ These modules allow you to:
 # TODO: Add example
 ```
 
-## Create a scheduled scan to run inside your VPC
-
-```hcl
-# TODO: Add example
-```
-
-You will have to leverage a NightVision token to authenticate with the NightVision API. If you are testing this locally, you can create an .auto.tfvars file:
-
-* [Generate a NightVision token](#generate-a-nightvision-token)
 
 # Appendix: Additional Instructions
 
