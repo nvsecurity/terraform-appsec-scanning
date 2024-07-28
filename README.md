@@ -8,6 +8,28 @@ These modules allow you to:
 2. Automatically generate API scanning targets by generating a Swagger doc from code analysis
 3. Create and manage inventories of NightVision targets (both Web apps and APIs)
 
+<!-- TOC start (generated with https://github.com/derlin/bitdowntoc) -->
+
+- [Prerequisites](#prerequisites)
+- [Tutorial](#tutorial)
+   * [Create a scheduled scan to run inside your VPC](#create-a-scheduled-scan-to-run-inside-your-vpc)
+   * [Inputs](#inputs)
+- [Examples](#examples)
+  + [Create a project](#create-a-project)
+  + [Create scan automation infrastructure](#create-scan-automation-infrastructure)
+  + [Create scheduled scans only](#create-scheduled-scans-only)
+  + [Scan APIs by analyzing code](#scan-apis-by-analyzing-code)
+  + [Scan APIs with an OpenAPI URL](#scan-apis-with-an-openapi-url)
+  + [Scan APIs with a local OpenAPI file](#scan-apis-with-a-local-openapi-file)
+  * [Resources](#resources)
+- [Appendix: Additional Instructions](#appendix-additional-instructions)
+   * [Installing the NightVision CLI](#installing-the-nightvision-cli)
+   * [Generate a NightVision token](#generate-a-nightvision-token)
+   * [Using the NightVision token in CI/CD](#using-the-nightvision-token-in-cicd)
+- [Contributing](#contributing)
+
+<!-- TOC end -->
+
 # Prerequisites
 
 * Sign up for NightVision: https://app.nightvision.net/
@@ -110,9 +132,7 @@ module "private_dast_scans" {
 
 <!-- BEGIN_TF_DOCS -->
 
-## Outputs
-
-No outputs.
+# Module Documentation
 
 ## Inputs
 
@@ -130,9 +150,15 @@ No outputs.
 | <a name="input_scan_configs"></a> [scan\_configs](#input\_scan\_configs) | List of scan configs | <pre>list(object({<br>    # AWS Arguments<br>    schedule_name       = string<br>    schedule_expression = optional(string, "rate(7 days)")<br>    # AWS Resources<br>    security_group_id = string<br>    subnet_id         = string<br>    # NightVision Constructs<br>    project = string<br>    target  = string<br>    auth    = optional(string)<br>  }))</pre> | `[]` | no |
 | <a name="input_web_targets"></a> [web\_targets](#input\_web\_targets) | Web Application Targets to scan. | <pre>list(object({<br>    url         = string<br>    project     = string<br>    target_name = string<br>  }))</pre> | `[]` | no |
 
+## Resources
+
+
+- data source.aws_caller_identity.current (main.tf#1)
+- data source.aws_region.current (main.tf#2)
+
 # Examples
 
-### Create a project
+## Create a project
 
 This will just create a NightVision project.
 
@@ -145,7 +171,7 @@ module "nightvision_project" {
 }
 ```
 
-### Create scan automation infrastructure
+## Create scan automation infrastructure
 
 This will create a Lambda function that will be able to launch ephemeral EC2 instances with scoped privileges and scan targets. 
 
@@ -158,7 +184,7 @@ module "scan_infrastructure" {
 }
 ```
 
-### Create scheduled scans only
+## Create scheduled scans only
 
 If you don't want to create targets or infrastructure and you just want to schedule scans, this is a good example. 
 
@@ -189,7 +215,7 @@ locals {
 }
 ```
 
-### Scan APIs by analyzing code
+## Scan APIs by analyzing code
 
 NightVision can scan APIs that don't have existing OpenAPI specifications, by scanning code. If your code is locally accessible, you can generate the OpenAPI specs with NightVision:
 
@@ -231,7 +257,7 @@ locals {
 }
 ```
 
-### Scan APIs with an OpenAPI URL
+## Scan APIs with an OpenAPI URL
 
 NightVision can scan APIs that have publicly accessible OpenAPI specifications. You can provide the URL to the OpenAPI spec to NightVision:
 
@@ -272,7 +298,7 @@ locals {
 }
 ```
 
-### Scan APIs with a local OpenAPI file
+## Scan APIs with a local OpenAPI file
 
 NightVision can scan APIs that have OpenAPI specifications stored locally. You can provide the path to the OpenAPI spec to NightVision:
 
@@ -312,12 +338,6 @@ locals {
   ]
 }
 ```
-
-## Resources
-
-
-- data source.aws_caller_identity.current (main.tf#1)
-- data source.aws_region.current (main.tf#2)
 <!-- END_TF_DOCS -->
 
 # Appendix: Additional Instructions
