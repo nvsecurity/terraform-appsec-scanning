@@ -121,12 +121,13 @@ locals {
 ```hcl
 # This will schedule scans for every 7 days
 module "private_dast_scans" {
-  source            = "github.com/nvsecurity/terraform-appsec-scanning"
-  nightvision_token   = var.nightvision_token
-  scan_configs        = local.scan_configs
-  create_project_name = local.project
-  web_targets         = local.web_targets
-  public_api_targets  = local.public_api_targets
+  source               = "github.com/nvsecurity/terraform-appsec-scanning"
+  nightvision_token    = var.nightvision_token
+  scan_configs         = local.scan_configs
+  create_project_name  = local.project
+  web_targets          = local.web_targets
+  public_api_targets   = local.public_api_targets
+  create_scanner_infra = true
 }
 ```
 
@@ -139,7 +140,7 @@ module "private_dast_scans" {
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_create_project_name"></a> [create\_project\_name](#input\_create\_project\_name) | Optionally, create a NightVision target. | `string` | `null` | no |
-| <a name="input_create_scanner_infra"></a> [create\_scanner\_infra](#input\_create\_scanner\_infra) | Optionally, create the Lambda infrastructure. | `bool` | `true` | no |
+| <a name="input_create_scanner_infra"></a> [create\_scanner\_infra](#input\_create\_scanner\_infra) | Optionally, create the Lambda infrastructure. | `bool` | n/a | yes |
 | <a name="input_existing_scanner_lambda_name"></a> [existing\_scanner\_lambda\_name](#input\_existing\_scanner\_lambda\_name) | The name of the Lambda function that will be used to scan the target. | `string` | `"nightvision-scheduled-scan"` | no |
 | <a name="input_existing_scheduler_role_name"></a> [existing\_scheduler\_role\_name](#input\_existing\_scheduler\_role\_name) | The name of the IAM role that will be used to schedule the scans. | `string` | `"NightVisionSchedulerExecutionRole"` | no |
 | <a name="input_nightvision_token"></a> [nightvision\_token](#input\_nightvision\_token) | NightVision API token | `any` | n/a | yes |

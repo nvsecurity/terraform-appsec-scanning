@@ -12,7 +12,6 @@ variable "nightvision_token" {
 variable "create_scanner_infra" {
   description = "Optionally, create the Lambda infrastructure."
   type        = bool
-  default     = true
 }
 
 variable "existing_scanner_lambda_name" {
