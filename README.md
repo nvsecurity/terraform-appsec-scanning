@@ -151,12 +151,6 @@ module "private_dast_scans" {
 | <a name="input_scan_configs"></a> [scan\_configs](#input\_scan\_configs) | List of scan configs | <pre>list(object({<br>    # AWS Arguments<br>    schedule_name       = string<br>    schedule_expression = optional(string, "rate(7 days)")<br>    # AWS Resources<br>    security_group_id = string<br>    subnet_id         = string<br>    # NightVision Constructs<br>    project = string<br>    target  = string<br>    auth    = optional(string)<br>  }))</pre> | `[]` | no |
 | <a name="input_web_targets"></a> [web\_targets](#input\_web\_targets) | Web Application Targets to scan. | <pre>list(object({<br>    url         = string<br>    project     = string<br>    target_name = string<br>  }))</pre> | `[]` | no |
 
-## Resources
-
-
-- data source.aws_caller_identity.current (main.tf#1)
-- data source.aws_region.current (main.tf#2)
-
 # Examples
 
 ## Create a project
