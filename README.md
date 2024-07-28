@@ -134,36 +134,36 @@ No outputs.
 
 ### Create a project
 
-  This will just create a NightVision project.
+This will just create a NightVision project.
 
-  ```hcl
-  module "nightvision_project" {
+```hcl
+module "nightvision_project" {
   source               = "github.com/nvsecurity/terraform-appsec-scanning"
   create_project_name  = "terraform-example"
   nightvision_token    = var.nightvision_token
   create_scanner_infra = false
 }
-  ```
+```
 
 ### Create scan automation infrastructure
 
-  This will create a Lambda function that will be able to launch ephemeral EC2 instances with scoped privileges and scan targets. 
+This will create a Lambda function that will be able to launch ephemeral EC2 instances with scoped privileges and scan targets. 
 
-  ```hcl
-  module "scan_infrastructure" {
+```hcl
+module "scan_infrastructure" {
   source               = "github.com/nvsecurity/terraform-appsec-scanning"
   nightvision_token    = var.nightvision_token
   create_scanner_infra = true
   region               = "us-east-1"
 }
-  ```
+```
 
 ### Create scheduled scans only
 
-  If you don't want to create targets or infrastructure and you just want to schedule scans, this is a good example. 
+If you don't want to create targets or infrastructure and you just want to schedule scans, this is a good example. 
 
-  ```hcl
-  locals {
+```hcl
+locals {
   project                     = "terraform-example"
   security_group_id           = "sg-0839aeaccdda71f96"
   subnet_id                   = "subnet-07a080852c0769a32"
@@ -187,14 +187,14 @@ locals {
     },
   ]
 }
-  ```
+```
 
 ### Scan APIs by analyzing code
 
-  NightVision can scan APIs that don't have existing OpenAPI specifications, by scanning code. If your code is locally accessible, you can generate the OpenAPI specs with NightVision:
+NightVision can scan APIs that don't have existing OpenAPI specifications, by scanning code. If your code is locally accessible, you can generate the OpenAPI specs with NightVision:
 
-  ```hcl
-  locals {
+```hcl
+locals {
   project                     = "terraform-example"
   security_group_id           = "sg-0839aeaccdda71f96"
   subnet_id                   = "subnet-07a080852c0769a32"
@@ -229,14 +229,14 @@ locals {
     },
   ]
 }
-  ```
+```
 
 ### Scan APIs with an OpenAPI URL
 
-  NightVision can scan APIs that have publicly accessible OpenAPI specifications. You can provide the URL to the OpenAPI spec to NightVision:
-  
-  ```hcl
-  locals {
+NightVision can scan APIs that have publicly accessible OpenAPI specifications. You can provide the URL to the OpenAPI spec to NightVision:
+
+```hcl
+locals {
   project           = "terraform-example"
   security_group_id = "sg-0839aeaccdda71f96"
   subnet_id         = "subnet-07a080852c0769a32"
@@ -270,14 +270,14 @@ locals {
     },
   ]
 }
-  ```
+```
 
 ### Scan APIs with a local OpenAPI file
 
 NightVision can scan APIs that have OpenAPI specifications stored locally. You can provide the path to the OpenAPI spec to NightVision:
 
-  ```hcl
-  locals {
+```hcl
+locals {
   project           = "terraform-example"
   security_group_id = "sg-0839aeaccdda71f96"
   subnet_id         = "subnet-07a080852c0769a32"
@@ -311,7 +311,7 @@ locals {
     },
   ]
 }
-  ```
+```
 
 ## Resources
 
